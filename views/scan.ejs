@@ -1,4 +1,4 @@
-<%- include('head'); -%>
+<%- include('header'); -%>
 
 
 <script src="https://kit.fontawesome.com/afd6aa68df.js" crossorigin="anonymous"></script>
@@ -7,9 +7,6 @@
 
 
     <div class="h-screen flex flex-row flex-wrap">
-
-        <%- include('nav'); -%>
-
 
         <% if (message.length> 0 && message !='Pending' && message !='Completed' && message !='Done') { se = 'disabled' }else {message = "" ; se = ""; }%>
 

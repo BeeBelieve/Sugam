@@ -9,7 +9,7 @@ router.get('/', function (req, res, next) {
     var message = "";
     var scan_id = req.query.scan_id;
 
-    console.log(scan_id);
+    //console.log(scan_id);
 
     var sql =
         "SELECT * FROM `scanreport` INNER JOIN `webcrawling` ON scanreport.scan_id = webcrawling.scan_id  AND scanreport.scan_id = '" +

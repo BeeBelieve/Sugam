@@ -1,128 +1,127 @@
 <!doctype html>
 <html lang="en">
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <link rel="shortcut icon" href="/images/fav.png" type="image/x-icon">
-    <script src="https://code.jquery.com/jquery-2.2.0.min.js"></script>
-    <link rel="stylesheet" href="https://kit-pro.fontawesome.com/releases/v5.12.1/css/pro.min.css">
-    <link rel="stylesheet" type="text/css" href="/stylesheets/style.css">
-    <title>Sugam Testing tool</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">  
+  <link rel="shortcut icon" href="./images/fav.png" type="image/x-icon">
+  <script src="https://code.jquery.com/jquery-2.2.0.min.js"></script>
+  <link rel="stylesheet" href="https://kit-pro.fontawesome.com/releases/v5.12.1/css/pro.min.css">
+  <link rel="stylesheet" type="text/css" href="./stylesheets/style.css">
+  <title>Sugam Testing tool</title>
 </head>
 <body class="bg-gray-100">
 
-<style>
+  <style>
+   
+.topnav {
+  overflow: hidden;
+  
+}
 
-    .topnav {
-        overflow: hidden;
+.topnav a {
+  float: left;
+  
+  text-align: center;
+  padding: 14px 16px;
+  text-decoration: none;
+  font-size: 17px;
+}
 
-    }
+.topnav a:hover {
+  background-color: #ddd;
+  color: black;
+}
 
-    .topnav a {
-        float: left;
+.topnav a.active {
+  background-color: #2E768E;
+  color: white;
+  
+}
+  </style>
 
-        text-align: center;
-        padding: 14px 16px;
-        text-decoration: none;
-        font-size: 17px;
-    }
-
-    .topnav a:hover {
-        background-color: #ddd;
-        color: black;
-    }
-
-    .topnav a.active {
-        background-color: #2E768E;
-        color: white;
-
-    }
-</style>
-
+ 
 
 <!-- start navbar -->
 <div class="md:fixed md:w-full md:top-0 md:z-20 flex flex-row flex-wrap items-center bg-white p-6 border-b border-gray-300">
-
+    
     <!-- logo -->
     <div class="flex-none w-56 flex flex-row items-center">
-        <img src="/img/logo.png" class="w-10 flex-none">
-        <strong class="capitalize ml-1 flex-1">Sugam</strong>
+      <img src="./images/logo.png" class="w-10 flex-none">
+      <strong class="capitalize ml-1 flex-1">Sugam</strong>
 
-        <button id="sliderBtn" class="flex-none text-right text-gray-900 hidden md:block">
-            <i class="fad fa-list-ul"></i>
-        </button>
+      <button id="sliderBtn" class="flex-none text-right text-gray-900 hidden md:block">
+        <i class="fad fa-list-ul"></i>
+      </button>
     </div>
-    <!-- end logo -->
+    <!-- end logo -->   
 
     <!-- navbar content toggle -->
     <button id="navbarToggle" class="hidden md:block md:fixed right-0 mr-6">
-        <i class="fad fa-chevron-double-down"></i>
+      <i class="fad fa-chevron-double-down"></i>
     </button>
     <!-- end navbar content toggle -->
-
+    
     <!-- navbar content -->
     <div id="navbar"
-         class="animated md:hidden md:fixed md:top-0 md:w-full  justify-between items-center md:flex-col md:items-center topnav">
-        <!-- left -->
-
-        <a class="mr-2 transition duration-500 ease-in-out hover:text-gray-900 " id="/dashboard" href="./dashboard"
-           title="Scan">Dashboard</a>
-        <a class="mr-2 transition duration-500 ease-in-out hover:text-gray-900 " id="/scandata" href="./scandata"
-           title="Scan">Scan</a>
-        <a class="mr-2 transition duration-500 ease-in-out hover:text-gray-900 " id="/results" href="./results"
-           title="Results">Results</a>
-        <a class="mr-2 transition duration-500 ease-in-out hover:text-gray-900 " id="/support" href="./support"
-           title="Support">Developer Assists</a>
+      class="animated md:hidden md:fixed md:top-0 md:w-full  justify-between items-center md:flex-col md:items-center topnav" >
+      <!-- left -->
+      
+        <a class="mr-2 transition duration-500 ease-in-out hover:text-gray-900 " id="/home" href="./" title="Scan" >Dashboard</a>
+        <a class="mr-2 transition duration-500 ease-in-out hover:text-gray-900 " id="/scan" href="./scan" title="Scan" >Scan</a>
+        <a class="mr-2 transition duration-500 ease-in-out hover:text-gray-900 " id="/result" href="./result" title="Results" >Results</a>
+        <a class="mr-2 transition duration-500 ease-in-out hover:text-gray-900 " id="#"  href="#" title="Support" >Developer Assists</a>
+      
 
 
-        <!-- end left -->
-        <!-- right -->
-        <div class="flex flex-row-reverse items-center">
-
-            <!-- user -->
-            <div class="dropdown relative md:static">
-
-                <button class="menu-btn focus:outline-none focus:shadow-outline flex flex-wrap items-center">
-                    <!-- <div class="w-8 h-8 overflow-hidden rounded-full">
-                      <img class="w-full h-full object-cover" src="img/user.svg">
-                    </div> -->
-
-                    <div class="ml-2 capitalize flex ">
-                        <!-- <a class="mr-2 transition duration-500 ease-in-out hover:text-gray-900" href="./login" title="Login">Login</a>           -->
-                    </div>
-                </button>
+      
+      <!-- end left -->
+      <!-- right -->
+      <div class="flex flex-row-reverse items-center">
+      
+        <!-- user -->
+        <div class="dropdown relative md:static">
+      
+          <button class="menu-btn focus:outline-none focus:shadow-outline flex flex-wrap items-center">
+            <!-- <div class="w-8 h-8 overflow-hidden rounded-full">
+              <img class="w-full h-full object-cover" src="img/user.svg">
+            </div> -->
+      
+            <div class="ml-2 capitalize flex ">
+              <!-- <a class="mr-2 transition duration-500 ease-in-out hover:text-gray-900" href="./login" title="Login">Login</a>           -->
             </div>
+          </button>
         </div>
+      </div>
 
     </div>
     <!-- end navbar content -->
 
-</div>
+  </div>
 <!-- end navbar -->
 
 
 <script>
-    var url = window.location.href;
-    var pathname = new URL(url).pathname;
+  var url = window.location.href;
+  var pathname = new URL(url).pathname;
+ 
+  if(pathname == '/resultdetails'){
+    var element = document.getElementById('/results');
+    element.classList.add("active");
 
-    if (pathname === '/resultdetails') {
-        var element = document.getElementById('/results');
-        element.classList.add("active");
-
-    } else {
-        var element = document.getElementById(pathname);
-        element.classList.add("active")
-    }
+  }else{
+      var element = document.getElementById(pathname);
+      element.classList.add("active")
+  }
 </script>
 
 <div class="flex flex-col">
+    
+<!-- sidebar toggle -->
+  <div class="text-right hidden md:block mb-4">
+    <button id="sideBarHideBtn">
+      <i class="fad fa-times-circle"></i>
+    </button>
+  </div>
 
-    <!-- sidebar toggle -->
-    <div class="text-right hidden md:block mb-4">
-        <button id="sideBarHideBtn">
-            <i class="fad fa-times-circle"></i>
-        </button>
-    </div>
 
-
-
+</div>
