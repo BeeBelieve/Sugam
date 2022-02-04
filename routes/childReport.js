@@ -55,8 +55,15 @@ router.get('/', async function (req, res, next) {
 
     var getChildUrlData = async (url, folderName) => {
         const options = {
+            waitUntil: 'load',
+            timeout: 900000000,
             includeNotices: true,
             includeWarnings: true,
+            runners: [
+                'axe',
+                'htmlcs'
+            ],
+
         };
 
         let len = url.length;

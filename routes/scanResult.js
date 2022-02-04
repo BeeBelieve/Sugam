@@ -163,6 +163,10 @@ const getUrlData = async (
         includeNotices: true,
         includeWarnings: true,
         standard: level,
+        runners: [
+            'axe',
+            'htmlcs'
+        ],
         //rule: "Principle1.Guideline1_4.1_4_6",
         // version: "WCAG 2.1",
     });

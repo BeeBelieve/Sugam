@@ -32,12 +32,12 @@ var childURLDetailsRouter = require('./routes/childURLDetails');
 
 /*cron.schedule('* * * * *', function () {
 
-    request.get('http://localhost/childReport', function (error, response, body) {
+    request.get('http://localhost:3000/childReport', function (error, response, body) {
         //console.log(url);
     });
 
-});
-*/
+});*/
+
 
 var app = express();
 
@@ -47,9 +47,8 @@ app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
 }));
 
 
-// view engine setup
+
 app.set('views', path.join(__dirname, 'views'));
-//app.set('view engine', 'pug');
 app.set("view engine", "ejs");
 
 app.use(logger('dev'));
