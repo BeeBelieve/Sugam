@@ -116,10 +116,15 @@
 		<div class="dropdownurl" style="float: left;width: 25%;">
 			<span>Check child URL</span>
 			<div class="dropdownurl-content">
+			<% if(data[0].length > 1){   %>
+			
 				<% for(var j=0; j<data[0].length; j++) {  %>
 				<p style="margin-top: 3%;"> <a class="mr-2 transition duration-500 ease-in-out hover:text-gray-900" href="./childURLDetails?scan_id=<%= data[0][j].scan_id %>&web_id=<%= data[0][j].web_id %>"
 						><%= data[0][j].webname %></a></p>
-				<% } %>
+			   <%}
+			}else{%>
+			    <p style="margin-top: 3%;"><span>No Record Found</span></p>			    
+			<% } %>
 						
 			</div>
 		</div>

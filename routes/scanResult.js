@@ -5,6 +5,7 @@ var cheerio = require("cheerio");
 var validUrl = require("valid-url");
 const pa11y = require("pa11y");
 var fs = require("fs");
+var moment = require('moment');
 
 
 /* GET Scan Result page. */
@@ -15,7 +16,8 @@ router.post('/', async function (req, res, next) {
     const url = req.body.uname;
     const level = req.body.level;
     const version = req.body.version;
-
+    const webCrawling = req.body.webCrawling;
+    
     if (url === "") {
         message = "Please add an URL";
         res.render("scan.ejs", {message: message});
@@ -124,8 +126,7 @@ router.post('/', async function (req, res, next) {
             });
             var imgCount = img.length;
             var vdCount = vd.length;
-            var docCount = document.length;
-
+            var docCount = document.length; 
 
             getUrlData(
                 url,
@@ -135,7 +136,8 @@ router.post('/', async function (req, res, next) {
                 level,
                 imgCount,
                 vdCount,
-                docCount
+                docCount,
+                webCrawling
             );
         });
 
@@ -155,7 +157,8 @@ const getUrlData = async (
     level,
     imgcount,
     vdCount,
-    docCount
+    docCount,
+    webCrawling
 ) => {
     const results = await pa11y(url, {
         waitUntil: 'load',
@@ -175,19 +178,22 @@ const getUrlData = async (
     var newStringName = results.documentTitle.replace(/[^A-Z0-9]/ig, "_");
 
     var name = newStringName + ".json";
+    var currentDate = moment().format('yyyy-mm-dd:hh:mm:ss');
+    var foldName = folderName+'-'+currentDate;
 
-    var dir = "public/json/" + folderName;
+    var dir = "public/json/" + foldName;
     if (!fs.existsSync(dir)) {
         fs.mkdirSync(dir);
     }
-    var filename = "public/json/" + folderName + "/" + name;
+    var filename = "public/json/" + foldName + "/" + name;
     const content = JSON.stringify(results);
     fs.writeFileSync(filename, content);
 
     var resarry = [];
-    resarry[0] = results;
+    resarry[0] = results;    
     resarry[1] = arr;
-    resarry[2] = folderName;
+    resarry[7] = webCrawling;   
+    resarry[2] = foldName;
     resarry[3] = level;
     resarry[4] = imgcount;
     resarry[5] = vdCount;
@@ -208,13 +214,20 @@ var getReport = function (req, res, next) {
     var rules_failed = 0;
     var frequency = "Ad-hoc";
 
-    var present_status = "Pending";
+   
     var webname = req[0].documentTitle;
     var url = req[0].pageUrl;
     var level = req[3];
     var imgCount = req[4];
     var vdCount = req[5];
     var docCount = req[6];
+    var webCrawling = req[7];
+    
+    if(webCrawling == 'Enabling'){
+        var present_status = "Pending";
+    }else{
+        var present_status = "Completed";
+    }
 
     var issues = req[0].issues;
 
@@ -230,7 +243,7 @@ var getReport = function (req, res, next) {
     var total = numErrors + numWarning + numNotices;
 
     var sql =
-        "INSERT INTO `scanreport`(`websitename`, `url`, `scan_level`, `result`, `rules_failed`, `errors`, `warnings`, `notices`, `frequency`, `status`, `total`, `level`, `imgcount`, `vdcount`, `document`) VALUES ('" +
+        "INSERT INTO `scanreport`(`websitename`, `url`, `scan_level`, `result`, `rules_failed`, `errors`, `warnings`, `notices`, `frequency`, `status`, `total`, `level`, `imgcount`, `vdcount`, `document`, `folder`) VALUES ('" +
         webname +
         "','" +
         url +
@@ -260,13 +273,17 @@ var getReport = function (req, res, next) {
         vdCount +
         "','" +
         docCount +
+        "','" +
+        req[2] +
         "')";
     //console.log(sql);
     db.query(sql, function (err, result) {
     });
-    var sqlI =
+
+    if(webCrawling == 'Enabling'){
+        var sqlI =
         "SELECT scan_id , errors, warnings, notices, total FROM scanreport ORDER BY scan_id DESC LIMIT 1";
-    db.query(sqlI, function (err, results) {
+        db.query(sqlI, function (err, results) {
         var scanID = results[0].scan_id;
 
         for (let k = 0; k < req[1].length; k++) {
@@ -282,7 +299,8 @@ var getReport = function (req, res, next) {
             db.query(sql, function (err, result) {
             });
         }
-    });
+        });
+    }    
 
     return true;
 };

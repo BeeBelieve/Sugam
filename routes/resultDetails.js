@@ -1,5 +1,6 @@
 var express = require('express');
 var router = express.Router();
+var moment = require('moment');
 
 /* GET ResultDetails page. */
 router.get('/', function (req, res, next) {
@@ -21,7 +22,9 @@ router.get('/', function (req, res, next) {
 
             var newStringName = results[0]["websitename"].replace(/[^A-Z0-9]/ig, "_");
             var filename = newStringName + ".json";
-            var folderName = results[0]["url"].split("/")[2];
+           // var folderName = results[0]["url"].split("/")[2];
+            var folderName = results[0]["folder"];
+
             var filepath = "public/json/" + folderName + "/" + filename;
             let rawdata = fs.readFileSync(filepath);
             let errors = JSON.parse(rawdata);
@@ -45,7 +48,9 @@ router.get('/', function (req, res, next) {
                     var newStringName = results[0]["websitename"].replace(/[^A-Z0-9]/ig, "_");
 
                     var filename = newStringName + ".json";
-                    var folderName = results[0]["url"].split("/")[2];
+                   // var folderName = results[0]["url"].split("/")[2];
+                    var folderName = results[0]["folder"];
+
                     var filepath = "public/json/" + folderName + "/" + filename;
                     let rawdata = fs.readFileSync(filepath);
                     let errors = JSON.parse(rawdata);
