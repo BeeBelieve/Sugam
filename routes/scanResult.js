@@ -1,287 +1,266 @@
-var express = require('express');
+var express = require("express");
 var router = express.Router();
 var request = require("request");
 var cheerio = require("cheerio");
 var validUrl = require("valid-url");
 const pa11y = require("pa11y");
 var fs = require("fs");
-
+var moment = require("moment");
+var Crawler = require("simplecrawler");
 
 /* GET Scan Result page. */
-router.post('/', async function (req, res, next) {
+router.post("/", async function (req, res, next) {
+	var message = "";
+	const url = req.body.uname;
+	const level = req.body.level;
+	const version = req.body.version;
+	const webCrawling = req.body.webCrawling;
 
+	if (url === "") {
+		message = "Please add an URL";
+		res.render("scan.ejs", { message: message });
+	} else {
+		var urlID = url.split("/")[2];
 
-    var message = "";
-    const url = req.body.uname;
-    const level = req.body.level;
-    const version = req.body.version;
+		var folderName = urlID;
+		getUrlData(url, folderName, version, level, webCrawling);
 
-    if (url === "") {
-        message = "Please add an URL";
-        res.render("scan.ejs", {message: message});
-    } else {
-        //console.log(url);
-        var urlID = url.split("/")[2];
-        var searchTerm = "/search?q=screen+scraping";
-        var childurl = url + searchTerm;
-        var arr = [];
-        var img = [];
-        var vd = [];
-        var document = [];
-        var folderName = urlID;
-
-        //PROCESS OF CHILD URL DATA
-        request(childurl, function (err, resp, body) {
-            $ = cheerio.load(body);
-            links = $("a"); //jquery get all hyperlinks
-            images = $("img");
-            videos = $("video");
-
-            $(links).each(function (i, link) {
-                var urls = $(link).attr("href");
-
-
-                if (validUrl.isUri(urls)) {
-
-                    var checkValidUrl = urls.split("/")[2];
-
-                    if (checkValidUrl === urlID) {
-
-                        var lastPart = urls.substr(urls.lastIndexOf("/") + 1);
-                        var last3 = lastPart.slice(-3);
-                        var doc = ["csv", "pdf", "xls", "txt", "json"];
-                        if (doc.includes(last3)) {
-                            document.push(urls);
-                        } else {
-                            arr.push(urls);
-                        }
-
-                    }
-
-
-                } else {
-
-
-                    var format = /#/;
-
-                    if (!format.test(urls)) {
-
-                        if (typeof urls === 'string') {
-
-                            var lastPart = urls.substr(urls.lastIndexOf("/") + 1);
-                            var last3 = lastPart.slice(-3);
-                            var doc = ["csv", "pdf", "xls", "txt", "json"];
-                            if (doc.includes(last3)) {
-                                document.push(urls);
-                            } else {
-
-                                if(urls.charAt(0) === '/'){
-                                    urls = urls.substring(1);
-                                }
-
-                                var mainUrl = 'https://' + urlID + '/' + urls;
-                                arr.push(mainUrl);
-                            }
-
-                        }
-                    }
-                }
-
-
-            });
-
-            var filteredArr = arr.filter(function (item, index) {
-                if (arr.indexOf(item) == index) return item;
-            });
-
-            var finarr = [];
-
-
-            for (let l = 0; l < filteredArr.length; l++) {
-                var str = filteredArr[l];
-
-                if (
-                    str.indexOf("google") >= 0 ||
-                    str.indexOf("linkedin") >= 0 ||
-                    str.indexOf("facebook") >= 0 ||
-                    str.indexOf("javascript") >= 0 ||
-                    str.indexOf("pdf") >= 0 ||
-                    str.indexOf("twitter") >= 0
-                ) {
-                } else {
-                    finarr.push(str);
-                }
-            }
-
-            $(images).each(function (j, image) {
-                var imag = $(image).attr("src");
-                img.push(imag);
-            });
-
-            $(videos).each(function (k, video) {
-                var videosList = $(video).attr("src");
-                vd.push(videosList);
-            });
-            var imgCount = img.length;
-            var vdCount = vd.length;
-            var docCount = document.length;
-
-
-            getUrlData(
-                url,
-                folderName,
-                finarr,
-                version,
-                level,
-                imgCount,
-                vdCount,
-                docCount
-            );
-        });
-
-
-        message = "Url Scanned Successfully . please check Result !";
-        res.render("scan.ejs", {message: message});
-    }
-
+		message = "Url Scanned Successfully . please check Result !";
+		res.render("scan.ejs", { message: message });
+	}
 });
 
+const getUrlData = async (url, folderName, version, level, webCrawling) => {
+	const pallyResults = await pa11y(url, {
+		waitUntil: "load",
+		timeout: 900000000,
+		includeNotices: true,
+		includeWarnings: true,
+		standard: level,
+		runners: ["axe", "htmlcs"],
+		//rule: "Principle1.Guideline1_4.1_4_6",
+		// version: "WCAG 2.1",
+	});
 
-const getUrlData = async (
-    url,
-    folderName,
-    arr,
-    version,
-    level,
-    imgcount,
-    vdCount,
-    docCount
-) => {
-    const results = await pa11y(url, {
-        waitUntil: 'load',
-        timeout: 900000000,
-        includeNotices: true,
-        includeWarnings: true,
-        standard: level,
-        //rule: "Principle1.Guideline1_4.1_4_6",
-        // version: "WCAG 2.1",
-    });
+	var newStringName = pallyResults.documentTitle.replace(/[^A-Z0-9]/gi, "_");
 
+	var name = newStringName + ".json";
 
-    var newStringName = results.documentTitle.replace(/[^A-Z0-9]/ig, "_");
+	db.query(
+		"SELECT scan_id  FROM scanreport ORDER BY scan_id DESC LIMIT 1",
+		function (err, results) {
+			if (results.length) {
+				var scanId = results[0].scan_id + 1;
+			} else {
+				var scanId = 1;
+			}
+			var foldName = folderName + "-" + scanId;
+			console.log(foldName);
+			var dir = "public/json/" + foldName;
+			if (!fs.existsSync(dir)) {
+				fs.mkdirSync(dir);
+			}
+			var filename = "public/json/" + foldName + "/" + name;
+			const content = JSON.stringify(pallyResults);
+			fs.writeFileSync(filename, content);
 
-    var name = newStringName + ".json";
+			var resarry = [];
+			resarry[0] = pallyResults;
+			resarry[1] = scanId;
+			resarry[7] = webCrawling;
+			resarry[2] = foldName;
+			resarry[3] = level;
 
-    var dir = "public/json/" + folderName;
-    if (!fs.existsSync(dir)) {
-        fs.mkdirSync(dir);
-    }
-    var filename = "public/json/" + folderName + "/" + name;
-    const content = JSON.stringify(results);
-    fs.writeFileSync(filename, content);
+			var value = getReport(resarry);
+		}
+	);
 
-    var resarry = [];
-    resarry[0] = results;
-    resarry[1] = arr;
-    resarry[2] = folderName;
-    resarry[3] = level;
-    resarry[4] = imgcount;
-    resarry[5] = vdCount;
-    resarry[6] = docCount;
-
-
-    var value = getReport(resarry);
-
-    return true;
+	return true;
 };
-
 
 var getReport = function (req, res, next) {
+	var scanlevel = "Level A";
+	var result = "Pass";
+	var rules_failed = 0;
+	var frequency = "Ad-hoc";
+	var scanId = req[1];
 
+	var webname = req[0].documentTitle;
+	var url = req[0].pageUrl;
+	var level = req[3];
+	var imgCount = 0;
+	var vdCount = 0;
+	var docCount = 0;
+	var webCrawling = req[7];
 
-    var scanlevel = "Level A";
-    var result = "Pass";
-    var rules_failed = 0;
-    var frequency = "Ad-hoc";
+	if (webCrawling == "Enabling") {
+		var present_status = "Pending";
+	} else {
+		var present_status = "Completed";
+	}
+	var imgCrawler = new Crawler(url);
+	imgCrawler.addFetchCondition(function (queueItem) {
+		return queueItem.path.match(
+			/\.(zip|jpg|jpeg|png|ico|gif|avif|jfif|pjpeg|pjp)$/i
+		);
+	});
+	imgCrawler.on("fetchcomplete", function (queueItem, responseBuffer) {
+		console.log(queueItem.url);
+		var imgCount = queueItem.url;
+		imgSql =
+			"INSERT INTO `media`(`type`, `scan_id`, `url`) VALUES ('image','" +
+			scanId +
+			"','" +
+			imgCount +
+			"')";
+		db.query(imgSql, function (err, result) {});
+	});
+	imgCrawler.start();
 
-    var present_status = "Pending";
-    var webname = req[0].documentTitle;
-    var url = req[0].pageUrl;
-    var level = req[3];
-    var imgCount = req[4];
-    var vdCount = req[5];
-    var docCount = req[6];
+	var docCrawler = new Crawler(url);
+	docCrawler.addFetchCondition(function (queueItem) {
+		return queueItem.path.match(
+			/\.(bmp|webp|ttf|woff|json|zip|rar|7z|exe|gzip|gz|pdf|docx)$/i
+		);
+	});
+	docCrawler.on("fetchcomplete", function (queueItem, responseBuffer) {
+		var docCount = queueItem.url;
+		docSql =
+			"INSERT INTO `media`(`type`, `scan_id`, `url`) VALUES ('docs','" +
+			scanId +
+			"','" +
+			docCount +
+			"')";
+		db.query(docSql, function (err, result) {});
+	});
+	docCrawler.start();
 
-    var issues = req[0].issues;
+	var vdCrawler = new Crawler(url);
+	vdCrawler.addFetchCondition(function (queueItem) {
+		return queueItem.path.match(
+			/\.(ogg|webm|mp4|mp3|mpg|mp2|mpeg|mpe|mpv|m4p|m4v|avi|wmv|mov|qt|flv|swf)$/i
+		);
+	});
+	vdCrawler.on("fetchcomplete", function (queueItem, responseBuffer) {
+		var vdCount = queueItem.url;
+		vdSql =
+			"INSERT INTO `media`(`type`, `scan_id`, `url`) VALUES ('video','" +
+			scanId +
+			"','" +
+			vdCount +
+			"')";
+		db.query(vdSql, function (err, result) {});
+	});
+	vdCrawler.start();
 
-    var numErrors = issues.reduce(function (n, person) {
-        return n + (person.typeCode == 1);
-    }, 0);
-    var numWarning = issues.reduce(function (n, person) {
-        return n + (person.typeCode == 2);
-    }, 0);
-    var numNotices = issues.reduce(function (n, person) {
-        return n + (person.typeCode == 3);
-    }, 0);
-    var total = numErrors + numWarning + numNotices;
+	var issues = req[0].issues;
 
-    var sql =
-        "INSERT INTO `scanreport`(`websitename`, `url`, `scan_level`, `result`, `rules_failed`, `errors`, `warnings`, `notices`, `frequency`, `status`, `total`, `level`, `imgcount`, `vdcount`, `document`) VALUES ('" +
-        webname +
-        "','" +
-        url +
-        "','" +
-        scanlevel +
-        "','" +
-        result +
-        "','" +
-        rules_failed +
-        "','" +
-        numErrors +
-        "','" +
-        numWarning +
-        "','" +
-        numNotices +
-        "','" +
-        frequency +
-        "','" +
-        present_status +
-        "','" +
-        total +
-        "','" +
-        level +
-        "','" +
-        imgCount +
-        "','" +
-        vdCount +
-        "','" +
-        docCount +
-        "')";
-    //console.log(sql);
-    db.query(sql, function (err, result) {
-    });
-    var sqlI =
-        "SELECT scan_id , errors, warnings, notices, total FROM scanreport ORDER BY scan_id DESC LIMIT 1";
-    db.query(sqlI, function (err, results) {
-        var scanID = results[0].scan_id;
+	var numErrors = issues.reduce(function (n, person) {
+		return n + (person.typeCode == 1);
+	}, 0);
+	var numWarning = issues.reduce(function (n, person) {
+		return n + (person.typeCode == 2);
+	}, 0);
+	var numNotices = issues.reduce(function (n, person) {
+		return n + (person.typeCode == 3);
+	}, 0);
+	var total = numErrors + numWarning + numNotices;
 
-        for (let k = 0; k < req[1].length; k++) {
-            var sql =
-                "INSERT INTO `webcrawling`( `scan_id`,  `weburl`,  `folder`) VALUES ('" +
-                scanID +
-                "','" +
-                req[1][k] +
-                "','" +
-                req[2] +
-                "')";
-            //console.log(sql);
-            db.query(sql, function (err, result) {
-            });
-        }
-    });
+	var sql =
+		"INSERT INTO `scanreport`(`websitename`, `url`, `scan_level`, `result`, `rules_failed`, `errors`, `warnings`, `notices`, `frequency`, `status`, `total`, `level`, `imgcount`, `vdcount`, `document`, `folder`) VALUES ('" +
+		webname +
+		"','" +
+		url +
+		"','" +
+		scanlevel +
+		"','" +
+		result +
+		"','" +
+		rules_failed +
+		"','" +
+		numErrors +
+		"','" +
+		numWarning +
+		"','" +
+		numNotices +
+		"','" +
+		frequency +
+		"','" +
+		present_status +
+		"','" +
+		total +
+		"','" +
+		level +
+		"','" +
+		imgCount +
+		"','" +
+		vdCount +
+		"','" +
+		docCount +
+		"','" +
+		req[2] +
+		"')";
+	//console.log(sql);
+	db.query(sql, function (err, result) {});
 
-    return true;
+	if (webCrawling == "Enabling") {
+		//PROCESS OF CHILD URL DATA
+		var exclude = [
+			"gif",
+			"jpg",
+			"jpeg",
+			"png",
+			"ico",
+			"bmp",
+			"ogg",
+			"webp",
+			"mp4",
+			"webm",
+			"mp3",
+			"ttf",
+			"woff",
+			"json",
+			"rss",
+			"atom",
+			"gz",
+			"zip",
+			"rar",
+			"7z",
+			"css",
+			"js",
+			"gzip",
+			"exe",
+			"xml",
+		];
+		var exts = exclude.join("|");
+		var regex = new RegExp(".(" + exts + ")", "i");
+
+		var childCrawler = new Crawler(url);
+		// var pages = [];
+		childCrawler.addFetchCondition(function (parsedURL) {
+			return !parsedURL.path.match(regex); // This will reject anything that's not a link.
+		});
+		childCrawler.start();
+		childCrawler.on(
+			"fetchcomplete",
+			function (item, responseBuffer, response) {
+				$childUrl = item.url;
+				console.log($childUrl);
+
+				var sql =
+					"INSERT INTO `webcrawling`( `scan_id`,  `weburl`,  `folder`) VALUES ('" +
+					scanId +
+					"','" +
+					$childUrl +
+					"','" +
+					req[2] +
+					"')";
+				db.query(sql, function (err, result) {});
+			}
+		);
+	}
+
+	return true;
 };
-
 
 module.exports = router;

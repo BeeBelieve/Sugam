@@ -1,69 +1,121 @@
-var express = require('express');
+var express = require("express");
 var router = express.Router();
+var moment = require("moment");
 
 /* GET ResultDetails page. */
-router.get('/', function (req, res, next) {
+router.get("/", function (req, res, next) {
+	fs = require("fs");
 
-    fs = require("fs");
+	var message = "";
+	var scan_id = req.query.scan_id;
 
-    var message = "";
-    var scan_id = req.query.scan_id;
+	//update value
+	db.query(
+		"SELECT COUNT(*) AS imgCount FROM media WHERE type = 'image' and  scan_id='" +
+			scan_id +
+			"'",
+		function (err, res) {
+			db.query(
+				"UPDATE `scanreport` SET `imgcount`='" +
+					res[0].imgCount +
+					"' WHERE `scan_id`='" +
+					scan_id +
+					"'",
+				function (err, result) {}
+			);
+		}
+	);
 
-    console.log(scan_id);
+	db.query(
+		"SELECT COUNT(*) AS vdCount FROM media WHERE type = 'video' and  scan_id='" +
+			scan_id +
+			"'",
+		function (err, res) {
+			db.query(
+				"UPDATE `scanreport` SET `vdcount`='" +
+					res[0].vdCount +
+					"' WHERE `scan_id`='" +
+					scan_id +
+					"'",
+				function (err, result) {}
+			);
+		}
+	);
 
-    var sql =
-        "SELECT * FROM `scanreport` INNER JOIN `webcrawling` ON scanreport.scan_id = webcrawling.scan_id  AND scanreport.scan_id = '" +
-        scan_id +
-        "'";
-    db.query(sql, function (err, results) {
+	db.query(
+		"SELECT COUNT(*) AS docCount FROM media WHERE type = 'docs' and  scan_id='" +
+			scan_id +
+			"'",
+		function (err, res) {
+			db.query(
+				"UPDATE `scanreport` SET `document`='" +
+					res[0].docCount +
+					"' WHERE `scan_id`='" +
+					scan_id +
+					"'",
+				function (err, result) {}
+			);
+		}
+	);
 
-        if (results.length) {
+	//console.log(scan_id);
 
-            var newStringName = results[0]["websitename"].replace(/[^A-Z0-9]/ig, "_");
-            var filename = newStringName + ".json";
-            var folderName = results[0]["url"].split("/")[2];
-            var filepath = "public/json/" + folderName + "/" + filename;
-            let rawdata = fs.readFileSync(filepath);
-            let errors = JSON.parse(rawdata);
+	var sql =
+		"SELECT * FROM `scanreport` INNER JOIN `webcrawling` ON scanreport.scan_id = webcrawling.scan_id  AND scanreport.scan_id = '" +
+		scan_id +
+		"'";
+	db.query(sql, function (err, results) {
+		if (results.length) {
+			var newStringName = results[0]["websitename"].replace(
+				/[^A-Z0-9]/gi,
+				"_"
+			);
+			var filename = newStringName + ".json";
+			// var folderName = results[0]["url"].split("/")[2];
+			var folderName = results[0]["folder"];
 
-            var data_array = {};
-            data_array[0] = results;
-            data_array[1] = errors.issues;
+			var filepath = "public/json/" + folderName + "/" + filename;
+			let rawdata = fs.readFileSync(filepath);
+			let errors = JSON.parse(rawdata);
 
-            res.render("resultDetails.ejs", {data: data_array});
-        } else {
-            console.log(results.length);
+			var data_array = {};
+			data_array[0] = results;
+			data_array[1] = errors.issues;
 
+			res.render("resultDetails.ejs", { data: data_array });
+		} else {
+			console.log(results.length);
 
-            var sql =
-                "SELECT * FROM `scanreport` WHERE scan_id = '" +
-                scan_id +
-                "'";
-            db.query(sql, function (err, results) {
-                if (results.length) {
+			var sql =
+				"SELECT * FROM `scanreport` WHERE scan_id = '" + scan_id + "'";
+			db.query(sql, function (err, results) {
+				if (results.length) {
+					var newStringName = results[0]["websitename"].replace(
+						/[^A-Z0-9]/gi,
+						"_"
+					);
 
-                    var newStringName = results[0]["websitename"].replace(/[^A-Z0-9]/ig, "_");
+					var filename = newStringName + ".json";
+					// var folderName = results[0]["url"].split("/")[2];
+					var folderName = results[0]["folder"];
 
-                    var filename = newStringName + ".json";
-                    var folderName = results[0]["url"].split("/")[2];
-                    var filepath = "public/json/" + folderName + "/" + filename;
-                    let rawdata = fs.readFileSync(filepath);
-                    let errors = JSON.parse(rawdata);
+					var filepath = "public/json/" + folderName + "/" + filename;
+					let rawdata = fs.readFileSync(filepath);
+					let errors = JSON.parse(rawdata);
 
-                    var data_array = {};
-                    data_array[0] = results;
-                    data_array[1] = errors.issues;
+					var data_array = {};
+					data_array[0] = results;
+					data_array[1] = errors.issues;
 
-                    //console.log(data_array);
-                    res.render("resultDetails.ejs", {data: data_array});
-                } else {
-                    message = "No Record Founds.";
-                    res.render("resultDetails.ejs", {message: message});
-                }
-            });
-        }
-    });
-
+					//console.log(data_array);
+					res.render("resultDetails.ejs", { data: data_array });
+				} else {
+					message = "No Record Founds.";
+					res.render("resultDetails.ejs", { message: message });
+				}
+			});
+		}
+	});
 });
 
 module.exports = router;
