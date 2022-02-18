@@ -155,40 +155,38 @@ const getUrlData = async (
 	var newStringName = pallyResults.documentTitle.replace(/[^A-Z0-9]/gi, "_");
 
 	var name = newStringName + ".json";
-	//var currentDate = moment().format("yyyy-mm-dd:hh:mm:ss");
 
-	db.query("SELECT MAX( scan_id ) FROM scanreport", function (err, results) {
-		console.log(results.length);
-		if (results.length > 1) {
-			var scanId = results[0].scan_id + 1;
-			var foldName = folderName + "-" + scanId;
-		} else {
-			var foldName = folderName + "-1";
+	db.query(
+		"SELECT scan_id  FROM scanreport ORDER BY scan_id DESC LIMIT 1",
+		function (err, results) {
+			if (results.length) {
+				var scanId = results[0].scan_id + 1;
+				var foldName = folderName + "-" + scanId;
+			} else {
+				var foldName = folderName + "-1";
+			}
+			console.log(foldName);
+			var dir = "public/json/" + foldName;
+			if (!fs.existsSync(dir)) {
+				fs.mkdirSync(dir);
+			}
+			var filename = "public/json/" + foldName + "/" + name;
+			const content = JSON.stringify(pallyResults);
+			fs.writeFileSync(filename, content);
+
+			var resarry = [];
+			resarry[0] = pallyResults;
+			resarry[1] = arr;
+			resarry[7] = webCrawling;
+			resarry[2] = foldName;
+			resarry[3] = level;
+			resarry[4] = imgcount;
+			resarry[5] = vdCount;
+			resarry[6] = docCount;
+
+			var value = getReport(resarry);
 		}
-
-		console.log("here");
-
-		console.log(foldName);
-		var dir = "public/json/" + foldName;
-		if (!fs.existsSync(dir)) {
-			fs.mkdirSync(dir);
-		}
-		var filename = "public/json/" + foldName + "/" + name;
-		const content = JSON.stringify(pallyResults);
-		fs.writeFileSync(filename, content);
-
-		var resarry = [];
-		resarry[0] = pallyResults;
-		resarry[1] = arr;
-		resarry[7] = webCrawling;
-		resarry[2] = foldName;
-		resarry[3] = level;
-		resarry[4] = imgcount;
-		resarry[5] = vdCount;
-		resarry[6] = docCount;
-
-		var value = getReport(resarry);
-	});
+	);
 
 	return true;
 };
