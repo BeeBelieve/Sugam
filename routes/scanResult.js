@@ -230,6 +230,7 @@ var getReport = function (req, res, next) {
 			"js",
 			"gzip",
 			"exe",
+			"pdf",
 			"xml",
 		];
 		var exts = exclude.join("|");
@@ -244,18 +245,20 @@ var getReport = function (req, res, next) {
 		childCrawler.on(
 			"fetchcomplete",
 			function (item, responseBuffer, response) {
-				$childUrl = item.url;
-				console.log($childUrl);
-
-				var sql =
-					"INSERT INTO `webcrawling`( `scan_id`,  `weburl`,  `folder`) VALUES ('" +
-					scanId +
-					"','" +
-					$childUrl +
-					"','" +
-					req[2] +
-					"')";
-				db.query(sql, function (err, result) {});
+				childUrl = item.url;
+				if (childUrl.indexOf(".pdf") != -1) {
+					// It is a pdf
+				} else {
+					var sql =
+						"INSERT INTO `webcrawling`( `scan_id`,  `weburl`,  `folder`) VALUES ('" +
+						scanId +
+						"','" +
+						childUrl +
+						"','" +
+						req[2] +
+						"')";
+					db.query(sql, function (err, result) {});
+				}
 			}
 		);
 	}

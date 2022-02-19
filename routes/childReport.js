@@ -4,6 +4,7 @@ var cheerio = require("cheerio");
 var validUrl = require("valid-url");
 const pa11y = require("pa11y");
 var fs = require("fs");
+const { empty } = require("cheerio/lib/api/manipulation");
 var router = express.Router();
 
 const alertMessage =
@@ -119,8 +120,11 @@ const addChildreport = function (req, res, next) {
 
 		for (let k = 0; k < req.length; k++) {
 			var webname = req[k].documentTitle;
-
 			var url = req[k].pageUrl;
+			if (webname == "") {
+				webname = "< Missing title >" + url;
+			}
+
 			if (url.substring(url.length - 1) == "/") {
 				url = url.substring(0, url.length - 1);
 			}
