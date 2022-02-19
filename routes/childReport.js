@@ -120,11 +120,6 @@ const addChildreport = function (req, res, next) {
 		for (let k = 0; k < req.length; k++) {
 			var webname = req[k].documentTitle;
 
-			if (webname !== null && webname !== "") {
-				webname = "No name Found";
-			}
-			console.log(webname);
-
 			var url = req[k].pageUrl;
 			if (url.substring(url.length - 1) == "/") {
 				url = url.substring(0, url.length - 1);
