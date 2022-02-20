@@ -85,8 +85,12 @@ router.get("/", async function (req, res, next) {
 
 		for (let k = 0; k < results.length; k++) {
 			var getName = results[k].documentTitle.split("/").toString();
+			if (getName == "") {
+				getName = "< Missing title >" + results[k].pageUrl;
+			}
 
 			var iname = getName.replace(/[^A-Z0-9]/gi, "_");
+
 			var name = iname + ".json";
 
 			var dir = "public/json/" + folderName;
