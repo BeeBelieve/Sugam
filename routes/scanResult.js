@@ -7,6 +7,7 @@ const pa11y = require("pa11y");
 var fs = require("fs");
 var moment = require("moment");
 var Crawler = require("simplecrawler");
+const puppeteer = require('puppeteer');
 
 /* GET Scan Result page. */
 router.post("/", async function (req, res, next) {

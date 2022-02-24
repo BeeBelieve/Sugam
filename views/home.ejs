@@ -22,9 +22,9 @@
                                     <div class="h6 text-indigo-700">
                                         <%= new URL(data[1][i]['url']).hostname.toLowerCase() %>
                                     </div>
-                                    <span class="rounded-full text-white badge bg-gray-400 text-xs">
+                                    <!-- <span class="rounded-full text-white badge bg-gray-400 text-xs">
                         <%= data[1][i]['total'] %>
-                    </span>
+                    </span> -->
                                 </div>
 
                                 <div class="mt-8">
@@ -32,17 +32,17 @@
                                     <button class="btn  btn-bs-danger" type="button" value="true" data-argname="badgeError"
                                             style="float: left;margin-left: 20px;">
                                         <span class="badge"><%= data[1][i]['errors'] %></span>
-                                        <p style="color: white;"> E</p>
+                                        <p style="color: white;"> Errors</p>
                                     </button>
                                     <button class="btn  btn-bs-info" type="button" value="true" data-argname="badgeWarning"
                                             style="float: left;margin-left: 20px;">
                                         <span class="badge"><%= data[1][i]['warnings'] %></span>
-                                        <p style="color: white;">W</p>
+                                        <p style="color: white;">Warnings</p>
                                     </button>
                                     <button class="btn bg-teal-400" type="button" value="true" data-argname="badgeNotice"
                                             style="float: left;margin-left: 20px;">
                                         <span class="badge"><%= data[1][i]['notices'] %></span>
-                                        <p style="color: white;">N</p>
+                                        <p style="color: white;">Notices</p>
                                     </button>
                                 </div>
 
@@ -76,13 +76,11 @@
                         <h1 class="h6">Hi !</h1>
 
                         <ul class="mt-4">
-                            <li class="text-sm font-light"><i class="fad fa-check-double mr-2 mb-2"></i> Update
-                                Dashboard UI
+                            <li class="text-sm font-light"><i class="fad fa-check-double mr-2 mb-2"></i> Analyze your website in Scan page
                             </li>
-                            <li class="text-sm font-light"><i class="fad fa-check-double mr-2 mb-2"></i> Fix Issue #74
+                            <li class="text-sm font-light"><i class="fad fa-check-double mr-2 mb-2"></i> Review your website’s performance in Results page
                             </li>
-                            <li class="text-sm font-light"><i class="fad fa-check-double mr-2"></i> Publish version
-                                [ V 0.0.1 ]
+                            <li class="text-sm font-light"><i class="fad fa-check-double mr-2"></i> Click on View icon in Results page to see the details
                             </li>
                         </ul>
                     </div>

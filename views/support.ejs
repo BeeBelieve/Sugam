@@ -1,0 +1,47 @@
+<%- include('header'); -%>
+
+<div class="h-screen flex flex-row flex-wrap">
+
+    <div class="bg-gray-100 flex-1 p-6 md:mt-16">
+		<div class="mt-6 grid grid-cols-2 gap-6 xl:grid-cols-1">
+
+            <div class="card bg-white border-teal-100 shadow-md text-white">
+                <div class="card-body flex flex-row">
+
+                    <div class="py-2 ml-10" style="color: black;">
+
+                        <ul class="mt-4">
+                            <li class="text-sm font-light"><i class="fas fa-angle-double-right mr-2 mb-2"></i> Color contrast of all webpages should be similar
+                            </li>
+                            <li class="text-sm font-light"><i class="fas fa-angle-double-right mr-2 mb-2"></i> Focus should move to all the accessible elements
+                            </li>
+                            <li class="text-sm font-light"><i class="fas fa-angle-double-right mr-2 mb-2"></i> Focus should not move to the Disabled elements
+                            </li>
+							<li class="text-sm font-light"><i class="fas fa-angle-double-right mr-2 mb-2"></i> When any pop-up is closed, then focus should redirect to the source element
+                            </li>
+							<!--<li class="text-sm font-light"><i class="fas fa-angle-double-right mr-2 mb-2"></i> When using ARIA controls, all element names should be displayed properly in the ARIA control pop-up
+                            </li>-->
+							<li class="text-sm font-light"><i class="fas fa-angle-double-right mr-2 mb-2"></i> When user selects the element, Focus should move to the indented element in webpage
+                            </li>
+							<li class="text-sm font-light"><i class="fas fa-link mr-2 mb-2"></i><a href="https://squizlabs.github.io/HTML_CodeSniffer/Standards/WCAG2/" target="_blank"> HTML_CodeSniffer</a>
+                            </li>
+							<li class="text-sm font-light"><i class="fas fa-link mr-2 mb-2"></i> <a href="https://github.com/dequelabs/axe-core/blob/develop/doc/rule-descriptions.md" target="_blank">Dequelabs Axe-Core Rules</a>
+                            </li>
+							<li class="text-sm font-light"><i class="fas fa-link mr-2"></i> <a href="https://www.w3.org/TR/WCAG21/" target="_blank">W3C Web Content Accessibility Guidelines, version 2.1</a>
+                            </li>
+
+                        </ul>
+                    </div>
+                 
+
+                </div>
+            </div>
+
+			</div>
+
+    </div>
+
+
+</div>
+
+<%- include('foot'); -%>

@@ -26,6 +26,7 @@ var resultDetailsRouter = require("./routes/resultDetails");
 var scanResultRouter = require("./routes/scanResult");
 var childReportRouter = require("./routes/childReport");
 var childURLDetailsRouter = require("./routes/childURLDetails");
+var supportRouter = require("./routes/support");
 
 cron.schedule('* * * * *', function () {
 
@@ -60,6 +61,7 @@ app.use("/resultDetails", resultDetailsRouter);
 app.use("/scanResult", scanResultRouter);
 app.use("/childReport", childReportRouter);
 app.use("/childURLDetails", childURLDetailsRouter);
+app.use("/support", supportRouter);
 
 //catch 404 and forward to error handler
 app.use(function (req, res, next) {

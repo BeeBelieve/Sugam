@@ -8,7 +8,7 @@
 
     <div class="h-screen flex flex-row flex-wrap">
 
-        <% if (message.length> 0 && message =='Pending' && message !='Completed' && message !='Done') { 
+       <% if (message.length> 0 && message =='Pending' && message !='Completed' && message !='Done') { 
             message = "Please wait until the current scan is Finished.";
             se = 'disabled' }else {message = "" ; se = ""; }%>
 
@@ -40,15 +40,15 @@
 
                         <bold>
                             <p>
-                                Webcrawling :
+                                Scan Mode :
                             </p>
                         </bold>
                         <span class=" text-white  text-xs">
                         <select class="btn btn-primary dropdown-toggle" name="webCrawling" id="webCrawling"
                                 style="background: aliceblue;margin-left: 52%;" required>
                             <option value="">--- Choose ---</option>
-                            <option value="Enabling">Enable</option>
-                            <option value="Disabling">Disable</option>
+                            <option value="Enabling">Full Website</option>
+                            <option value="Disabling">Current Page</option>
                         </select>
 
                     </span>
