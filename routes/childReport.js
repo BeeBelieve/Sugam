@@ -39,6 +39,9 @@ router.get("/", async function (req, res, next) {
 				}
 				//console.log(getURL);
 				getChildUrlData(getURL, folderName);
+				
+				res.send('Done');
+				
 			} else {
 				var update =
 					"UPDATE `scanreport` SET `status`='Completed' WHERE `scan_id`='" +

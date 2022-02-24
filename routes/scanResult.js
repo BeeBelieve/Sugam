@@ -55,7 +55,7 @@ const getUrlData = async (url, folderName, version, level, webCrawling) => {
 				var scanId = 1;
 			}
 			var foldName = folderName + "-" + scanId;
-			console.log(foldName);
+			//console.log(foldName);
 			var dir = "public/json/" + foldName;
 			if (!fs.existsSync(dir)) {
 				fs.mkdirSync(dir);
@@ -105,7 +105,7 @@ var getReport = function (req, res, next) {
 		);
 	});
 	imgCrawler.on("fetchcomplete", function (queueItem, responseBuffer) {
-		console.log(queueItem.url);
+		//console.log(queueItem.url);
 		var imgCount = queueItem.url;
 		imgSql =
 			"INSERT INTO `media`(`type`, `scan_id`, `url`) VALUES ('image','" +

@@ -84,7 +84,7 @@ router.get("/", function (req, res, next) {
 
 			res.render("resultDetails.ejs", { data: data_array });
 		} else {
-			console.log(results.length);
+			//console.log(results.length);
 
 			var sql =
 				"SELECT * FROM `scanreport` WHERE scan_id = '" + scan_id + "'";

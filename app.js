@@ -27,13 +27,12 @@ var scanResultRouter = require("./routes/scanResult");
 var childReportRouter = require("./routes/childReport");
 var childURLDetailsRouter = require("./routes/childURLDetails");
 
-/*cron.schedule('* * * * *', function () {
+cron.schedule('* * * * *', function () {
 
-    request.get('http://localhost:3000/childReport', function (error, response, body) {
-        //console.log(url);
-    });
-
-});*/
+	request('http://localhost/childReport', function (error, response, body) {
+		console.log("Done");
+	})
+});
 
 var app = express();
 

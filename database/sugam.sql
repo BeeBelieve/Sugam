@@ -30,9 +30,9 @@ SET time_zone = "+00:00";
 CREATE TABLE `media` (
   `type` varchar(256) DEFAULT NULL,
   `scan_id` varchar(256) DEFAULT NULL,
-  `url` varchar(256) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+  `url` varchar(256) CHARACTER SET utf8mb4  DEFAULT NULL,
   `id` int NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ;
 
 --
 -- Dumping data for table `media`
@@ -142,7 +142,7 @@ INSERT INTO `media` (`type`, `scan_id`, `url`, `id`) VALUES
 CREATE TABLE `role` (
   `role_id` int NOT NULL,
   `role_name` varchar(225) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ;
 
 --
 -- Dumping data for table `role`
@@ -178,7 +178,7 @@ CREATE TABLE `scanreport` (
   `vdcount` varchar(256) NOT NULL DEFAULT '0',
   `document` varchar(255) NOT NULL DEFAULT '0',
   `folder` varchar(256) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ;
 
 --
 -- Dumping data for table `scanreport`
@@ -221,12 +221,12 @@ CREATE TABLE `webcrawling` (
   `scan_id` varchar(255) DEFAULT NULL,
   `webname` varchar(255) DEFAULT NULL,
   `weburl` varchar(255) DEFAULT NULL,
-  `errors` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT '0',
-  `notices` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT '0',
-  `warnings` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT '0',
-  `total` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT '0',
+  `errors` varchar(255) CHARACTER SET utf8mb4  DEFAULT '0',
+  `notices` varchar(255) CHARACTER SET utf8mb4  DEFAULT '0',
+  `warnings` varchar(255) CHARACTER SET utf8mb4  DEFAULT '0',
+  `total` varchar(255) CHARACTER SET utf8mb4  DEFAULT '0',
   `folder` varchar(255) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ;
 
 --
 -- Dumping data for table `webcrawling`
