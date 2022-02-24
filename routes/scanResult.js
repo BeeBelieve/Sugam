@@ -7,8 +7,7 @@ const pa11y = require("pa11y");
 var fs = require("fs");
 var moment = require("moment");
 var Crawler = require("simplecrawler");
-const puppeteer = require('puppeteer');
-	
+
 /* GET Scan Result page. */
 router.post("/", async function (req, res, next) {
 	var message = "";
@@ -16,8 +15,6 @@ router.post("/", async function (req, res, next) {
 	const level = req.body.level;
 	const version = req.body.version;
 	const webCrawling = req.body.webCrawling;
-
-
 
 	if (url === "") {
 		message = "Please add an URL";
@@ -44,7 +41,6 @@ const getUrlData = async (url, folderName, version, level, webCrawling) => {
 		//rule: "Principle1.Guideline1_4.1_4_6",
 		// version: "WCAG 2.1",
 	});
-	
 
 	var newStringName = pallyResults.documentTitle.replace(/[^A-Z0-9]/gi, "_");
 
@@ -59,6 +55,7 @@ const getUrlData = async (url, folderName, version, level, webCrawling) => {
 				var scanId = 1;
 			}
 			var foldName = folderName + "-" + scanId;
+			
 			var dir = "public/json/" + foldName;
 			if (!fs.existsSync(dir)) {
 				fs.mkdirSync(dir);
@@ -87,7 +84,6 @@ var getReport = function (req, res, next) {
 	var rules_failed = 0;
 	var frequency = "Ad-hoc";
 	var scanId = req[1];
-	var foldName = req[2]
 
 	var webname = req[0].documentTitle;
 	var url = req[0].pageUrl;
@@ -109,28 +105,16 @@ var getReport = function (req, res, next) {
 		);
 	});
 	imgCrawler.on("fetchcomplete", function (queueItem, responseBuffer) {
-		//console.log(queueItem.url);
+		console.log(queueItem.url);
 		var imgCount = queueItem.url;
-		var parts = queueItem.url.split('/');
-		var lastSegment = parts.pop() || parts.pop();
-					
 		imgSql =
 			"INSERT INTO `media`(`type`, `scan_id`, `url`) VALUES ('image','" +
 			scanId +
 			"','" +
 			imgCount +
-			"')";	
+			"')";
 		db.query(imgSql, function (err, result) {});
-		  
-		  (async () => {
-		  const browser = await puppeteer.launch();
-		  const page = await browser.newPage();
-		  await page.goto(queueItem.url);
-		  await page.screenshot({ path: "public/json/" + foldName + "/" +lastSegment+".jpg" });
-		  await browser.close();
-		})(80000);
 	});
-	
 	imgCrawler.start();
 
 	var docCrawler = new Crawler(url);
