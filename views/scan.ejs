@@ -10,7 +10,9 @@
 
        <% if (message.length> 0 && message =='Pending' && message !='Completed' && message !='Done') { 
             message = "Please wait until the current scan is Finished.";
-            se = 'disabled' }else {message = "" ; se = ""; }%>
+            se = 'disabled'} else if(message.length> 0 && message !='Pending' && message !='Completed' && message !='Done'){ 
+                message = message ;se = 'disabled';
+            }else {message = '' ; se = ''; }%>
 
         <!-- strat content -->
         <div class="bg-gray-100 flex-1 p-6 md:mt-16">
