@@ -6,6 +6,7 @@ const pa11y = require("pa11y");
 var fs = require("fs");
 const { empty } = require("cheerio/lib/api/manipulation");
 var router = express.Router();
+const md5 = require("md5");
 
 const alertMessage =
 	'<div class="alert alert-danger" role="alert">Something went wrong</div>';
@@ -39,9 +40,8 @@ router.get("/", async function (req, res, next) {
 				}
 				//console.log(getURL);
 				getChildUrlData(getURL, folderName);
-				
-				res.send('Done');
-				
+
+				res.send("Done");
 			} else {
 				var update =
 					"UPDATE `scanreport` SET `status`='Completed' WHERE `scan_id`='" +
@@ -94,7 +94,7 @@ router.get("/", async function (req, res, next) {
 
 			var iname = getName.replace(/[^A-Z0-9]/gi, "_");
 
-			var name = iname + ".json";
+			var name = md5(iname) + ".json";
 
 			var dir = "public/json/" + folderName;
 			if (!fs.existsSync(dir)) {
