@@ -54,60 +54,69 @@ router.get("/", async function (req, res, next) {
 	});
 
 	var getChildUrlData = async (url, folderName) => {
-		const options = {
-			waitUntil: "load",
-			timeout: 900000000,
-			includeNotices: true,
-			includeWarnings: true,
-			runners: ["axe", "htmlcs"],
-		};
+		try {
+			const options = {
+				waitUntil: "load",
+				timeout: 900000000,
+				includeNotices: true,
+				includeWarnings: true,
+				runners: ["axe", "htmlcs"],
+			};
+			let len = url.length;
+			var pally = [];
+			for (let i = 0; i < len; i++) {
+				var urls = url[i];
 
-		let len = url.length;
-		// let len = 10;
-		var pally = [];
+				if (validUrl.isUri(urls)) {
+					var setPal = pa11y(urls, options);
 
-		for (let i = 0; i < len; i++) {
-			var urls = url[i];
+					pally.push(setPal);
+				} else {
+					// var urlID = "webdamn";
+					// var turls = "https://" + urlID + "/" + urls;
+					// var setPal = pa11y(turls, options);
+					// pally.push(setPal);
+					// console.log(turl);
+					// geturlData(turl, folderName);
+				}
+			}
 
-			if (validUrl.isUri(urls)) {
-				var setPal = pa11y(urls, options);
+			// Run tests against multiple URLs
+			const results = await Promise.all(pally);
 
-				pally.push(setPal);
-			} else {
-				// var urlID = "webdamn";
-				// var turls = "https://" + urlID + "/" + urls;
-				// var setPal = pa11y(turls, options);
-				// pally.push(setPal);
-				// console.log(turl);
-				// geturlData(turl, folderName);
+			for (let k = 0; k < results.length; k++) {
+				var getName = results[k].documentTitle.split("/").toString();
+				if (getName == "") {
+					getName = "< Missing title >" + results[k].pageUrl;
+				}
+
+				var iname = getName.replace(/[^A-Z0-9]/gi, "_");
+
+				var name = md5(iname) + ".json";
+
+				var dir = "public/json/" + folderName;
+				if (!fs.existsSync(dir)) {
+					fs.mkdirSync(dir);
+				}
+				var filename = "public/json/" + folderName + "/" + name;
+				const content = JSON.stringify(results[k]);
+				fs.writeFileSync(filename, content);
+			}
+
+			var gSut = addChildreport(results);
+		} catch (error) {
+			for (let j = 0; j < url.length; j++) {
+				try {
+					await pa11y(url[j], {});
+				} catch (error) {
+					deleteQ =
+						"DELETE FROM `webcrawling` WHERE `weburl`='" +
+						url[j] +
+						"'";
+					db.query(deleteQ, function (err, result) {});
+				}
 			}
 		}
-
-		// Run tests against multiple URLs
-		const results = await Promise.all(pally);
-
-		for (let k = 0; k < results.length; k++) {
-			var getName = results[k].documentTitle.split("/").toString();
-			if (getName == "") {
-				getName = "< Missing title >" + results[k].pageUrl;
-			}
-
-			var iname = getName.replace(/[^A-Z0-9]/gi, "_");
-
-			var name = md5(iname) + ".json";
-
-			var dir = "public/json/" + folderName;
-			if (!fs.existsSync(dir)) {
-				fs.mkdirSync(dir);
-			}
-			var filename = "public/json/" + folderName + "/" + name;
-			const content = JSON.stringify(results[k]);
-			fs.writeFileSync(filename, content);
-		}
-
-		var gSut = addChildreport(results);
-
-		//app.post("/addChildreport", scan.addChildreport(results));
 	};
 });
 
@@ -123,79 +132,79 @@ const addChildreport = function (req, res, next) {
 	var sqlI =
 		"SELECT scan_id , errors, warnings, notices, total FROM scanreport ORDER BY scan_id DESC LIMIT 1";
 	db.query(sqlI, function (err, results) {
-		var scanID = results[0].scan_id;
+		try {
+			var scanID = results[0].scan_id;
+			for (let k = 0; k < req.length; k++) {
+				var webname = req[k].documentTitle;
+				var url = req[k].pageUrl;
+				if (webname == "") {
+					webname = "< Missing title >" + url;
+				}
 
-		for (let k = 0; k < req.length; k++) {
-			var webname = req[k].documentTitle;
-			var url = req[k].pageUrl;
-			if (webname == "") {
-				webname = "< Missing title >" + url;
+				if (url.substring(url.length - 1) == "/") {
+					url = url.substring(0, url.length - 1);
+				}
+
+				var reUrl = url + "/";
+
+				var issues = req[k].issues;
+
+				var numErrors = issues.reduce(function (n, person) {
+					return n + (person.typeCode == 1);
+				}, 0);
+				var numWarning = issues.reduce(function (n, person) {
+					return n + (person.typeCode == 2);
+				}, 0);
+				var numNotices = issues.reduce(function (n, person) {
+					return n + (person.typeCode == 3);
+				}, 0);
+				var total = numErrors + numWarning + numNotices;
+				var merge = "('" + url + "', '" + reUrl + "')";
+
+				var sql =
+					"UPDATE `webcrawling` SET `webname`='" +
+					webname +
+					"',`errors`='" +
+					numErrors +
+					"',`notices`='" +
+					numNotices +
+					"',`warnings`='" +
+					numWarning +
+					"',`total`='" +
+					total +
+					"' WHERE `weburl` IN" +
+					merge +
+					" ";
+
+				db.query(sql, function (err, result) {
+					message = SuccessMessage;
+				});
+
+				numErrorsI += numErrors;
+				numNoticesI += numNotices;
+				numWarningI += numWarning;
+				totalI += total;
 			}
+			var upErrors = numErrorsI + results[0].errors;
+			var upNotices = numNoticesI + results[0].notices;
+			var upWarnings = numWarningI + results[0].warnings;
+			var uptotals = totalI + results[0].total;
 
-			if (url.substring(url.length - 1) == "/") {
-				url = url.substring(0, url.length - 1);
-			}
-
-			var reUrl = url + "/";
-
-			var issues = req[k].issues;
-
-			var numErrors = issues.reduce(function (n, person) {
-				return n + (person.typeCode == 1);
-			}, 0);
-			var numWarning = issues.reduce(function (n, person) {
-				return n + (person.typeCode == 2);
-			}, 0);
-			var numNotices = issues.reduce(function (n, person) {
-				return n + (person.typeCode == 3);
-			}, 0);
-			var total = numErrors + numWarning + numNotices;
-			var merge = "('" + url + "', '" + reUrl + "')";
-
-			var sql =
-				"UPDATE `webcrawling` SET `webname`='" +
-				webname +
-				"',`errors`='" +
-				numErrors +
-				"',`notices`='" +
-				numNotices +
+			var update =
+				"UPDATE `scanreport` SET `errors`='" +
+				upErrors +
 				"',`warnings`='" +
-				numWarning +
+				upWarnings +
+				"',`notices`='" +
+				upNotices +
 				"',`total`='" +
-				total +
-				"' WHERE `weburl` IN" +
-				merge +
-				" ";
-
-			db.query(sql, function (err, result) {
-				message = SuccessMessage;
-			});
-
-			numErrorsI += numErrors;
-			numNoticesI += numNotices;
-			numWarningI += numWarning;
-			totalI += total;
-		}
-
-		var upErrors = numErrorsI + results[0].errors;
-		var upNotices = numNoticesI + results[0].notices;
-		var upWarnings = numWarningI + results[0].warnings;
-		var uptotals = totalI + results[0].total;
-
-		var update =
-			"UPDATE `scanreport` SET `errors`='" +
-			upErrors +
-			"',`warnings`='" +
-			upWarnings +
-			"',`notices`='" +
-			upNotices +
-			"',`total`='" +
-			uptotals +
-			"' WHERE `scan_id`='" +
-			scanID +
-			"'";
-		//console.log(update);
-		db.query(update, function (err, result) {});
+				uptotals +
+				"' WHERE `scan_id`='" +
+				scanID +
+				"'";
+			//console.log(update);
+			db.query(update, function (err, result) {});
+		} catch (error) {}
 	});
 	return true;
 };
