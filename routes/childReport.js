@@ -58,7 +58,7 @@ router.get("/", async function (req, res, next) {
 			const options = {
 				waitUntil: "load",
 				timeout: 900000000,
-				includeNotices: true,
+				//includeNotices: true,
 				includeWarnings: true,
 				runners: ["axe", "htmlcs"],
 			};

@@ -34,7 +34,7 @@ const getUrlData = async (url, folderName, version, level, webCrawling) => {
 	const pallyResults = await pa11y(url, {
 		waitUntil: "load",
 		timeout: 900000000,
-		includeNotices: true,
+		//includeNotices: true,
 		includeWarnings: true,
 		standard: level,
 		runners: ["axe", "htmlcs"],
@@ -55,7 +55,7 @@ const getUrlData = async (url, folderName, version, level, webCrawling) => {
 				var scanId = 1;
 			}
 			var foldName = folderName + "-" + scanId;
-			
+
 			var dir = "public/json/" + foldName;
 			if (!fs.existsSync(dir)) {
 				fs.mkdirSync(dir);
