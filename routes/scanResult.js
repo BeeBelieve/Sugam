@@ -31,7 +31,7 @@ router.post("/", async function (req, res, next) {
 });
 
 const getUrlData = async (url, folderName, version, level, webCrawling) => {
-	if (version == "WCAG 2.1") {
+	if (version == "WCAG 2.0") {
 		var ignore = [
 			"WCAG2AA.Principle1.Guideline1_3.1_3_4.RestrictView",
 			"WCAG2AA.Principle1.Guideline1_3.1_3_5_H98.FaultyValue",

@@ -56,7 +56,7 @@ router.get("/", async function (req, res, next) {
 
 	var getChildUrlData = async (url, folderName, version) => {
 		try {
-			if (version == "WCAG 2.1") {
+			if (version == "WCAG 2.0") {
 				var ignore = [
 					"WCAG2AA.Principle1.Guideline1_3.1_3_4.RestrictView",
 					"WCAG2AA.Principle1.Guideline1_3.1_3_5_H98.FaultyValue",
