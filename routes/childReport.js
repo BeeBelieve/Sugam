@@ -23,9 +23,10 @@ const SuccessMessage =
 /* GET child Report page. */
 router.get("/", async function (req, res, next) {
 	var sqlI =
-		"SELECT scan_id , errors, warnings, notices, total FROM scanreport ORDER BY scan_id DESC LIMIT 1";
+		"SELECT scan_id , errors, warnings, notices, total,version FROM scanreport ORDER BY scan_id DESC LIMIT 1";
 	db.query(sqlI, function (err, results) {
 		var scanID = results[0].scan_id;
+		var version = results[0].version;
 
 		var sql =
 			"SELECT `web_id`, `weburl`, `folder` FROM `webcrawling` WHERE notices =0 AND warnings =0 AND errors =0 AND scan_id = '" +
@@ -39,7 +40,7 @@ router.get("/", async function (req, res, next) {
 					var folderName = results[0].folder;
 				}
 				//console.log(getURL);
-				getChildUrlData(getURL, folderName);
+				getChildUrlData(getURL, folderName, version);
 
 				res.send("Done");
 			} else {
@@ -53,15 +54,23 @@ router.get("/", async function (req, res, next) {
 		});
 	});
 
-	var getChildUrlData = async (url, folderName) => {
+	var getChildUrlData = async (url, folderName, version) => {
 		try {
+			if (version == "WCAG 2.1") {
+				var ignore = ["WCAG2AA.Principle3.Guideline3_1.3_1_1.H57.2"];
+			} else {
+				var ignore = "";
+			}
 			const options = {
 				waitUntil: "load",
 				timeout: 900000000,
-				//includeNotices: true,
+				includeNotices: true,
 				includeWarnings: true,
 				runners: ["axe", "htmlcs"],
+				ignore: ignore,
 			};
+
+			console.log(options);
 			let len = url.length;
 			var pally = [];
 			for (let i = 0; i < len; i++) {

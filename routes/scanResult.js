@@ -31,15 +31,20 @@ router.post("/", async function (req, res, next) {
 });
 
 const getUrlData = async (url, folderName, version, level, webCrawling) => {
+	if (version == "WCAG 2.1") {
+		var ignore = ["WCAG2AA.Principle3.Guideline3_1.3_1_1.H57.2"];
+	} else {
+		var ignore = "";
+	}
+	console.log(ignore);
 	const pallyResults = await pa11y(url, {
 		waitUntil: "load",
 		timeout: 900000000,
-		//includeNotices: true,
+		includeNotices: true,
 		includeWarnings: true,
 		standard: level,
 		runners: ["axe", "htmlcs"],
-		//rule: "Principle1.Guideline1_4.1_4_6",
-		// version: "WCAG 2.1",
+		ignore: ignore,
 	});
 
 	var newStringName = pallyResults.documentTitle.replace(/[^A-Z0-9]/gi, "_");
@@ -70,6 +75,7 @@ const getUrlData = async (url, folderName, version, level, webCrawling) => {
 			resarry[7] = webCrawling;
 			resarry[2] = foldName;
 			resarry[3] = level;
+			resarry[4] = version;
 
 			var value = getReport(resarry);
 		}
@@ -167,7 +173,7 @@ var getReport = function (req, res, next) {
 	var total = numErrors + numWarning + numNotices;
 
 	var sql =
-		"INSERT INTO `scanreport`(`websitename`, `url`, `scan_level`, `result`, `rules_failed`, `errors`, `warnings`, `notices`, `frequency`, `status`, `total`, `level`, `imgcount`, `vdcount`, `document`, `folder`) VALUES ('" +
+		"INSERT INTO `scanreport`(`websitename`, `url`, `scan_level`, `result`, `rules_failed`, `errors`, `warnings`, `notices`, `frequency`, `status`, `total`, `level`, `imgcount`, `vdcount`, `document`, `folder` , `version`) VALUES ('" +
 		webname +
 		"','" +
 		url +
@@ -199,6 +205,8 @@ var getReport = function (req, res, next) {
 		docCount +
 		"','" +
 		req[2] +
+		"','" +
+		req[4] +
 		"')";
 	//console.log(sql);
 	db.query(sql, function (err, result) {});
