@@ -70,7 +70,6 @@ router.get("/", async function (req, res, next) {
 				ignore: ignore,
 			};
 
-			console.log(options);
 			let len = url.length;
 			var pally = [];
 			for (let i = 0; i < len; i++) {
