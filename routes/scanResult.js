@@ -32,7 +32,29 @@ router.post("/", async function (req, res, next) {
 
 const getUrlData = async (url, folderName, version, level, webCrawling) => {
 	if (version == "WCAG 2.1") {
-		var ignore = ["WCAG2AA.Principle3.Guideline3_1.3_1_1.H57.2"];
+		var ignore = [
+			"WCAG2AA.Principle1.Guideline1_3.1_3_4.RestrictView",
+			"WCAG2AA.Principle1.Guideline1_3.1_3_5_H98.FaultyValue",
+			"WCAG2AAA.Principle1.Guideline1_3.1_3_6_ARIA11.Check",
+			"WCAG2AA.Principle1.Guideline1_4.1_4_10_C32,C31,C33,C38,SCR34,G206.Check",
+			"WCAG2AA.Principle1.Guideline1_4.1_4_11_G195,G207,G18,G145,G174,F78.Check",
+			"WCAG2AA.Principle1.Guideline1_4.1_4_12_C36,C35.Check",
+			"WCAG2AA.Principle1.Guideline1_4.1_4_13_F95.Check",
+			"WCAG2A.Principle1.Guideline2_1.2_1_4.Check",
+			"WCAG2A.Principle1.Guideline2_2.2_2_6.Check",
+			"WCAG2AAA.Principle1.Guideline2_3.2_3_3.Check",
+			"WCAG2A.Principle1.Guideline2_5.2_5_1.Check",
+			"WCAG2A.Principle1.Guideline2_5.2_5_2.SinglePointer_Check",
+			"WCAG2A.Principle1.Guideline2_5.2_5_2.Mousedown_Check",
+			"WCAG2A.Principle1.Guideline2_5.2_5_2.Touchstart_Check",
+			"WCAG2A.Principle1.Guideline2_5.2_5_2.Touchstart_Check",
+			"WCAG2A.Principle1.Guideline2_5.2_5_3_F96.AccessibleName",
+			"WCAG2A.Principle1.Guideline2_5.2_5_4.Check",
+			"WCAG2A.Principle1.Guideline2_5.2_5_4.Devicemotion",
+			"WCAG2AAA.Principle1.Guideline2_5.2_5_5.Check",
+			"WCAG2AAA.Principle1.Guideline2_5.2_5_6.Check",
+			"WCAG2AA.Principle1.Guideline4_1.4_1_3_ARIA22,G199,ARIA19,G83,G84,G85,G139,G177,G194,ARIA23.Check",
+		];
 	} else {
 		var ignore = "";
 	}
@@ -40,7 +62,7 @@ const getUrlData = async (url, folderName, version, level, webCrawling) => {
 	const pallyResults = await pa11y(url, {
 		waitUntil: "load",
 		timeout: 900000000,
-		includeNotices: true,
+		//includeNotices: true,
 		includeWarnings: true,
 		standard: level,
 		runners: ["axe", "htmlcs"],
